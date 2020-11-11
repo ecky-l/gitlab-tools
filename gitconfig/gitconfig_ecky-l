@@ -1,0 +1,19 @@
+[pull]
+	rebase = true
+[merge]
+	tool = gvimdiff
+	conflictstyle = diff3
+[alias]
+	logs = log --pretty=\"%Cgreen%h %Cblue[%an, %ad] %Creset %s\" --date=format-local:\"%d.%m.%Y %H:%M\"
+	s = status -s
+    sb = status -sb
+	st = status
+    co = checkout
+    mrpush = !sh /Users/elehmann/Workspace/gitlab-tools/sh/create-mr.sh
+    mrclean = !sh /Users/elehmann/Workspace/gitlab-tools/sh/cleanup-mr.sh
+#[core]
+#	autocrlf = true
+[push]
+	default = upstream
+[core]
+	pager = "less -F -X"
