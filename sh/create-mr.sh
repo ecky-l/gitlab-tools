@@ -18,6 +18,11 @@ do
             WIP_PREFIX="WIP "
             shift
             ;;
+        -t|--type)
+            shift
+            BRANCH_TYPE=$1
+            shift
+            ;;
         --)
             # dashed arguments after the -- belong to git
             # not yet necessary
@@ -26,6 +31,26 @@ do
             ;;
     esac
 done
+
+test -z "${BRANCH_TYPE}" && BRANCH_TYPE=feature
+
+case ${BRANCH_TYPE} in
+    f|feature)
+        BRANCH_TYPE=feature
+        ;;
+    b|bugfix)
+        BRANCH_TYPE=bugfix
+        ;;
+    h|hotfix)
+        BRANCH_TYPE=hotfix
+        ;;
+    c|cleanup)
+        BRANCH_TYPE=cleanup
+        ;;
+    *)
+        errorExit 'wrong branch type. Must be f (feature), b (bugfix), h (hotfix) or c (cleanup)'
+        ;;
+esac
 
 ORIGIN=origin
 if [[ -n ${1} ]]; then ORIGIN=${1}; fi 
@@ -47,11 +72,10 @@ DESCRIPTION=$(git log --pretty=%H | head -n1 | git show | tail -n +2)
 # The source branch is an abbreviated form of the commit subject (first line of the commit message). It
 # contains all characters from the subject but non-ascii characters are removed and spaces are substituted by dashes
 # Remove non-ascii chars could be done by tr -cd '\11\12\15\40-\176', but is done automatically by git log --pretty=%f
-SOURCE_BRANCH=$(git log --pretty=%f | head -n1 | cut -c1-80)
+SOURCE_BRANCH=${BRANCH_TYPE}/$(git log --pretty=%f | head -n1 | cut -c1-80)
 LOCAL_BRANCH=`git status -sb | head -n1 | cut -d' ' -f2 | sed 's/\.\.\./ /' | cut -d' ' -f1`
 TARGET_BRANCH=$(git status -sb | head -n1 | cut -d' ' -f2 | cut -d'/' -f2)
 
-echo $TARGET_BRANCH
 if [[ ${LOCAL_BRANCH} =~ ^mr-${ORIGIN}-[0-9]+$ ]]; then
     MR_IID=`echo ${LOCAL_BRANCH} | cut -d'-' -f3`
     GITLAB_API_PROJECT_URL=${GITLAB_API_URL}/projects/${PROJECT_ID}
