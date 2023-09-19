@@ -1,0 +1,23 @@
+#!/bin/sh
+
+#
+# add a story id of format ABC-123 from branch name to commit message
+#
+
+COMMIT_MSG_FILE=$1
+
+OLD_MSG="`cat ${COMMIT_MSG_FILE}`"
+
+BRANCH=`git rev-parse --abbrev-ref HEAD`
+STORY_ID="`git rev-parse --abbrev-ref HEAD | sed -E 's/^([A-Z]+-[0-9]+).+/\1/'`"
+
+if `echo ${STORY_ID} | grep -Eq "^${BRANCH}$"`; then
+    # apparently not a story branch
+    exit 0
+fi
+
+if ! `echo ${OLD_MSG} | grep -Eq "^\[${STORY_ID}\]"`; then 
+    echo "Adding the story id ([${STORY_ID}]) to the commit message..."
+    echo "[${STORY_ID}] ${OLD_MSG}" > ${COMMIT_MSG_FILE}
+fi
+

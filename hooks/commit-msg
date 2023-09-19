@@ -1,0 +1,12 @@
+#!/bin/sh
+
+#
+# validate that the commit message does not just contain a story id of format ABC-123
+#
+
+COMMIT_MSG_FILE=$1
+
+if `cat ${COMMIT_MSG_FILE} | head -n1 | grep -Eq "^\[[A-Z]+-[0-9]+\] *$"`; then
+    echo "Commit message contains only the story ID. Please enter a meaningful message"
+    exit 1
+fi
