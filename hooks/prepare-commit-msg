@@ -9,7 +9,7 @@ COMMIT_MSG_FILE=$1
 OLD_MSG="`cat ${COMMIT_MSG_FILE}`"
 
 BRANCH=`git rev-parse --abbrev-ref HEAD`
-STORY_ID="`git rev-parse --abbrev-ref HEAD | sed -E 's/^([a-z]+\/)?([A-Z]+-[0-9]+)[-_].+/\2/'`"
+STORY_ID="`git rev-parse --abbrev-ref HEAD | sed -E 's/^([a-z]+\/)?([A-z]+(-[0-9]+)?)[-_].+/\2/'`"
 
 if `echo ${STORY_ID} | grep -Eq "^${BRANCH}$"`; then
     # apparently not a story branch
